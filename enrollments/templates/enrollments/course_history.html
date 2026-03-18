@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Historial de cursos — CECATI 97{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'enrollments/css/enrollments.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="enroll-section">
+    <div class="enroll-container">
+
+        <header class="my-courses-header">
+            <div>
+                <h1 class="my-courses-title">Historial de cursos</h1>
+                <p class="my-courses-subtitle">Cursos que has completado</p>
+            </div>
+            <a href="{% url 'enrollments:my_courses' %}" class="btn-secondary btn-secondary--sm">
+                ← Mis cursos activos
+            </a>
+        </header>
+
+        {% if enrollments %}
+            <div class="my-courses-grid" role="list">
+                {% for enrollment in enrollments %}
+                    <article class="my-course-card my-course-card--completed" role="listitem">
+
+                        <div class="my-course-card__header">
+                            <div>
+                                <span class="my-course-card__category">
+                                    {{ enrollment.group.course.category.name|default:"Sin categoría" }}
+                                </span>
+                                <h2 class="my-course-card__name">
+                                    {{ enrollment.group.course.name }}
+                                </h2>
+                            </div>
+                            <span class="group-status group-status--completed">Completado</span>
+                        </div>
+
+                        <ul class="my-course-card__info" aria-label="Detalles del curso">
+                            <li>
+                                <span class="info-label">Grupo</span>
+                                <span>{{ enrollment.group.name }}</span>
+                            </li>
+                            <li>
+                                <span class="info-label">Turno</span>
+                                <span class="group-shift group-shift--{{ enrollment.group.shift }}">
+                                    {{ enrollment.group.get_shift_display }}
+                                </span>
+                            </li>
+                            <li>
+                                <span class="info-label">Periodo</span>
+                                <span>
+                                    {{ enrollment.group.start_date|date:"d/m/Y" }} –
+                                    {{ enrollment.group.end_date|date:"d/m/Y" }}
+                                </span>
+                            </li>
+                            {% if enrollment.grade %}
+                                <li>
+                                    <span class="info-label">Calificación final</span>
+                                    <span class="grade-badge grade-badge--{% if enrollment.grade >= 8 %}high{% elif enrollment.grade >= 6 %}mid{% else %}low{% endif %}">
+                                        {{ enrollment.grade }}
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+
+                        <div class="my-course-card__footer">
+                            <a href="{% url 'courses:group_detail' enrollment.group.course.slug enrollment.group.id %}"
+                               class="btn-secondary btn-secondary--sm">
+                                Ver curso
+                            </a>
+                        </div>
+
+                    </article>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div class="enroll-empty" role="status">
+                <span class="enroll-empty__icon" aria-hidden="true">🎓</span>
+                <h2 class="enroll-empty__title">Aún no has completado ningún curso</h2>
+                <p class="enroll-empty__text">Tus cursos completados aparecerán aquí.</p>
+                <a href="{% url 'enrollments:my_courses' %}" class="btn-primary">Ver mis cursos activos →</a>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

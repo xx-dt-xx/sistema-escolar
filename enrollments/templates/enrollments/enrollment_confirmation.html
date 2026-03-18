@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscripción confirmada — CECATI 97{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'enrollments/css/enrollments.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="enroll-section">
+    <div class="enroll-container enroll-container--narrow">
+
+        <!-- Éxito -->
+        <div class="confirmation-card" role="main">
+            <div class="confirmation-icon" aria-hidden="true">✓</div>
+            <h1 class="confirmation-title">¡Inscripción confirmada!</h1>
+            <p class="confirmation-subtitle">
+                Tu inscripción al curso <strong>{{ enrollment.group.course.name }}</strong>,
+                grupo <strong>{{ enrollment.group.name }}</strong>, ha sido registrada exitosamente.
+            </p>
+
+            <!-- Credenciales de acceso (solo si es cuenta nueva) -->
+            {% if student_created and temp_password %}
+                <div class="credentials-box" role="region" aria-label="Credenciales de acceso">
+                    <div class="credentials-box__header">
+                        <span aria-hidden="true">🔐</span>
+                        <strong>Tus credenciales de acceso</strong>
+                    </div>
+                    <p class="credentials-box__note">
+                        Guarda esta información. La necesitarás para ingresar al sistema por primera vez.
+                    </p>
+                    <div class="credentials-row">
+                        <span class="credentials-label">ID de usuario</span>
+                        <code class="credentials-value">{{ enrollment.student.id }}</code>
+                    </div>
+                    <div class="credentials-row">
+                        <span class="credentials-label">Contraseña temporal</span>
+                        <code class="credentials-value">{{ temp_password }}</code>
+                    </div>
+                    <div class="enroll-alert enroll-alert--warning" role="alert">
+                        <span aria-hidden="true">⚠️</span>
+                        <p>Al iniciar sesión por primera vez se te pedirá cambiar tu contraseña.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Resumen de inscripción -->
+            <div class="confirmation-summary" aria-label="Detalles de tu inscripción">
+                <h2 class="confirmation-summary__title">Detalles de tu inscripción</h2>
+                <div class="review-card">
+                    <div class="review-row">
+                        <span class="review-label">Nombre</span>
+                        <span class="review-value">{{ enrollment.full_name }}</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Correo</span>
+                        <span class="review-value">{{ enrollment.email }}</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Curso</span>
+                        <span class="review-value">{{ enrollment.group.course.name }}</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Grupo</span>
+                        <span class="review-value">{{ enrollment.group.name }}</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Turno</span>
+                        <span class="review-value">{{ enrollment.group.get_shift_display }}</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Inicio</span>
+                        <span class="review-value">{{ enrollment.group.start_date|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Pago mensual</span>
+                        <span class="review-value">${{ enrollment.group.course.monthly_price }}</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Fecha de inscripción</span>
+                        <span class="review-value">{{ enrollment.enrolled_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="confirmation-actions">
+                <a href="{% url 'accounts:login' %}" class="btn-primary">
+                    Iniciar sesión →
+                </a>
+                <a href="{% url 'courses:course_list' %}" class="btn-secondary">
+                    Ver más cursos
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

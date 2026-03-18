@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ group.name }} — {{ course.name }} — CECATI 97{% endblock %}
+{% block nav_cursos %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'courses/css/courses.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<nav class="breadcrumb">
+    <div class="courses-container">
+        <a href="{% url 'courses:course_list' %}">Cursos</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="{% url 'courses:course_detail' course.slug %}">{{ course.name }}</a>
+        <span class="breadcrumb-sep">›</span>
+        <span>{{ group.name }}</span>
+    </div>
+</nav>
+
+<!-- Encabezado del grupo -->
+<section class="detail-hero">
+    <div class="courses-container">
+        <div class="detail-hero__inner">
+            <div class="detail-hero__content">
+                <span class="detail-category">{{ course.name }}</span>
+                <h1 class="detail-title">{{ group.name }}</h1>
+                <div class="group-badges">
+                    <span class="group-shift group-shift--{{ group.shift }}">{{ group.get_shift_display }}</span>
+                    <span class="group-status group-status--{{ group.status }}">{{ group.get_status_display }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Cuerpo del grupo -->
+<section class="detail-body">
+    <div class="courses-container detail-grid">
+
+        <!-- Columna principal -->
+        <div class="detail-main">
+
+            <!-- Horario -->
+            <div class="detail-section">
+                <h2 class="detail-section__title">Horario</h2>
+                {% if schedules %}
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Hora inicio</th>
+                                <th>Hora fin</th>
+                                <th>Aula</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for schedule in schedules %}
+                                <tr>
+                                    <td>{{ schedule.get_day_display }}</td>
+                                    <td>{{ schedule.start_time|time:"H:i" }}</td>
+                                    <td>{{ schedule.end_time|time:"H:i" }}</td>
+                                    <td>{{ schedule.classroom|default:"Por definir" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Horario por definir.</p>
+                {% endif %}
+            </div>
+
+            <!-- Instructores -->
+            <div class="detail-section">
+                <h2 class="detail-section__title">Instructores</h2>
+                {% if instructors %}
+                    <div class="instructors-grid">
+                        {% for gi in instructors %}
+                            <div class="instructor-card">
+                                {% if gi.instructor.profile_picture %}
+                                    <img src="{{ gi.instructor.profile_picture.url }}" alt="{{ gi.instructor }}" class="instructor-card__photo">
+                                {% else %}
+                                    <div class="instructor-card__photo instructor-card__photo--placeholder">
+                                        {{ gi.instructor.user.first_name|first }}{{ gi.instructor.user.last_name|first }}
+                                    </div>
+                                {% endif %}
+                                <div class="instructor-card__info">
+                                    <strong class="instructor-card__name">{{ gi.instructor }}</strong>
+                                    <span class="instructor-card__role">{{ gi.get_role_display }}</span>
+                                    <span class="instructor-card__speciality">{{ gi.instructor.speciality }}</span>
+                                    <p class="instructor-card__bio">{{ gi.instructor.bio }}</p>
+                                    {% if gi.instructor.linkedin_url %}
+                                        <a href="{{ gi.instructor.linkedin_url }}" target="_blank" class="instructor-card__linkedin">
+                                            LinkedIn →
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Columna lateral -->
+        <aside class="detail-sidebar">
+            <div class="sidebar-card">
+                <h2 class="sidebar-card__title">Detalles del grupo</h2>
+
+                <ul class="group-info">
+                    <li>
+                        <span class="group-info__label">Fecha de inicio</span>
+                        {{ group.start_date|date:"d/m/Y" }}
+                    </li>
+                    <li>
+                        <span class="group-info__label">Fecha de fin</span>
+                        {{ group.end_date|date:"d/m/Y" }}
+                    </li>
+                    <li>
+                        <span class="group-info__label">Inscripción hasta</span>
+                        {{ group.enrollment_deadline|date:"d/m/Y" }}
+                    </li>
+                    <li>
+                        <span class="group-info__label">Precio mensual</span>
+                        ${{ course.monthly_price }}
+                    </li>
+                    <li>
+                        <span class="group-info__label">Lugares disponibles</span>
+                        {% if group.is_full %}
+                            <span class="spots-full">Sin lugares</span>
+                        {% else %}
+                            <span class="spots-available">{{ group.available_spots }} de {{ group.max_capacity }}</span>
+                        {% endif %}
+                    </li>
+                </ul>
+
+                {% if not group.is_full %}
+                    <a href="{% url 'enrollments:registration' %}?course_id={{ course.id }}&group_id={{ group.id }}" class="btn-enroll">Inscribirme a este grupo</a>
+                {% else %}
+                    <p class="enroll-full">Este grupo no tiene lugares disponibles.</p>
+                {% endif %}
+
+                <a href="{% url 'courses:course_detail' course.slug %}" class="btn-back">
+                    ← Ver otros grupos
+                </a>
+            </div>
+        </aside>
+
+    </div>
+</section>
+
+{% endblock %}

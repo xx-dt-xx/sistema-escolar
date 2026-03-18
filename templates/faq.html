@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Preguntas Frecuentes — CECATI 97{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="page-hero">
+    <div class="page-hero__inner">
+        <h1 class="page-hero__title">Preguntas Frecuentes</h1>
+        <p class="page-hero__subtitle">Encuentra respuesta a las dudas más comunes</p>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="page-section">
+    <div class="page-container faq-layout">
+
+        {% if faq_image %}
+        <div class="faq-image-col">
+            <img src="{{ faq_image.url }}" alt="Preguntas frecuentes" class="faq-image">
+        </div>
+        {% endif %}
+
+        <div class="faq-container">
+
+        <!-- Categoría: Inscripciones -->
+        <div class="faq-group">
+            <h2 class="faq-group__title">Inscripciones</h2>
+
+            <div class="faq-item" id="faq-1">
+                <button class="faq-item__question" onclick="toggleFaq('faq-1')" aria-expanded="false">
+                    ¿Cómo me inscribo a un curso?
+                    <span class="faq-arrow">›</span>
+                </button>
+                <div class="faq-item__answer">
+                    <p>Para inscribirte a un curso debes seleccionar el grupo de tu preferencia, completar el formulario de inscripción con tus datos personales y realizar el pago del primer mes. Una vez procesada tu inscripción recibirás un correo con tu ID de acceso y contraseña temporal.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" id="faq-2">
+                <button class="faq-item__question" onclick="toggleFaq('faq-2')" aria-expanded="false">
+                    ¿Cuál es la fecha límite de inscripción?
+                    <span class="faq-arrow">›</span>
+                </button>
+                <div class="faq-item__answer">
+                    <p>Cada grupo tiene su propia fecha límite de inscripción, la cual puedes consultar en la página de detalle del grupo. Te recomendamos inscribirte con anticipación ya que los lugares son limitados.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" id="faq-3">
+                <button class="faq-item__question" onclick="toggleFaq('faq-3')" aria-expanded="false">
+                    ¿Puedo inscribirme a más de un curso al mismo tiempo?
+                    <span class="faq-arrow">›</span>
+                </button>
+                <div class="faq-item__answer">
+                    <p>Sí, puedes inscribirte a varios cursos siempre y cuando los horarios no se empalmen. El sistema verificará automáticamente que no exista conflicto de horarios al momento de tu inscripción.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categoría: Pagos -->
+        <div class="faq-group">
+            <h2 class="faq-group__title">Pagos</h2>
+
+            <div class="faq-item" id="faq-4">
+                <button class="faq-item__question" onclick="toggleFaq('faq-4')" aria-expanded="false">
+                    ¿Cuándo debo pagar la mensualidad?
+                    <span class="faq-arrow">›</span>
+                </button>
+                <div class="faq-item__answer">
+                    <p>El pago de la mensualidad debe realizarse dentro de los primeros 5 días hábiles de cada mes. Recibirás un recordatorio por correo electrónico con los detalles del pago.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" id="faq-5">
+                <button class="faq-item__question" onclick="toggleFaq('faq-5')" aria-expanded="false">
+                    ¿Qué métodos de pago aceptan?
+                    <span class="faq-arrow">›</span>
+                </button>
+                <div class="faq-item__answer">
+                    <p>Aceptamos pago en efectivo en caja, transferencia bancaria y tarjeta de crédito o débito. También puedes realizar tu pago en línea a través de nuestro portal de pagos.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" id="faq-6">
+                <button class="faq-item__question" onclick="toggleFaq('faq-6')" aria-expanded="false">
+                    ¿Qué pasa si no pago a tiempo?
+                    <span class="faq-arrow">›</span>
+                </button>
+                <div class="faq-item__answer">
+                    <p>Si el pago no se recibe en el periodo establecido, el acceso al sistema y a las clases puede ser suspendido temporalmente. Para regularizar tu situación comunícate con nosotros a la brevedad.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categoría: Cursos -->
+        <div class="faq-group">
+            <h2 class="faq-group__title">Cursos y clases</h2>
+
+            <div class="faq-item" id="faq-7">
+                <button class="faq-item__question" onclick="toggleFaq('faq-7')" aria-expanded="false">
+                    ¿Qué pasa si falto a una clase?
+                    <span class="faq-arrow">›</span>
+                </button>
+                <div class="faq-item__answer">
+                    <p>Cada instructor maneja su política de asistencia. En general, se permite un máximo de 20% de inasistencias. Te recomendamos comunicarte directamente con tu instructor para ponerte al corriente.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" id="faq-8">
+                <button class="faq-item__question" onclick="toggleFaq('faq-8')" aria-expanded="false">
+                    ¿Se entrega algún certificado al terminar el curso?
+                    <span class="faq-arrow">›</span>
+                </button>
+                <div class="faq-item__answer">
+                    <p>Sí, al completar satisfactoriamente el curso y cumplir con los requisitos de asistencia y evaluación, se emite un certificado de finalización con validez oficial.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" id="faq-9">
+                <button class="faq-item__question" onclick="toggleFaq('faq-9')" aria-expanded="false">
+                    ¿Puedo cambiar de grupo una vez inscrito?
+                    <span class="faq-arrow">›</span>
+                </button>
+                <div class="faq-item__answer">
+                    <p>Los cambios de grupo están sujetos a disponibilidad y deben solicitarse antes de la segunda semana de clases. Para gestionar un cambio comunícate con el área de servicios escolares.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA contacto -->
+        <div class="faq-cta">
+            <p>¿No encontraste la respuesta que buscabas?</p>
+            <a href="{% url 'contacto' %}" class="faq-cta__btn">Contáctanos →</a>
+        </div>
+
+        </div><!-- /faq-container -->
+    </div><!-- /faq-layout -->
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleFaq(itemId) {
+    const item = document.getElementById(itemId);
+    if (!item) return;
+    const isOpen = item.classList.contains('open');
+    // Cerrar todos
+    document.querySelectorAll('.faq-item.open').forEach(el => {
+        el.classList.remove('open');
+        el.querySelector('.faq-item__question').setAttribute('aria-expanded', 'false');
+    });
+    // Abrir el seleccionado si estaba cerrado
+    if (!isOpen) {
+        item.classList.add('open');
+        item.querySelector('.faq-item__question').setAttribute('aria-expanded', 'true');
+    }
+}
+</script>
+{% endblock %}

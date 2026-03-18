@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.name }} — CECATI 97{% endblock %}
+{% block nav_cursos %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'courses/css/courses.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<nav class="breadcrumb">
+    <div class="courses-container">
+        <a href="{% url 'courses:course_list' %}">Cursos</a>
+        <span class="breadcrumb-sep">›</span>
+        <span>{{ course.name }}</span>
+    </div>
+</nav>
+
+<!-- Encabezado del curso -->
+<section class="detail-hero">
+    <div class="courses-container">
+        <div class="detail-hero__inner">
+
+            {% if course.cover_image or gallery_images %}
+            <div class="detail-hero__slideshow">
+                <div class="slideshow">
+                    {% if course.cover_image %}
+                        <div class="slideshow__slide active">
+                            <img src="{{ course.cover_image }}" alt="{{ course.name }}">
+                        </div>
+                    {% endif %}
+                    {% for img in gallery_images %}
+                        <div class="slideshow__slide{% if not course.cover_image and forloop.first %} active{% endif %}">
+                            <img src="{{ img.image }}" alt="{{ course.name }} — imagen {{ img.order }}">
+                        </div>
+                    {% endfor %}
+                    <button class="slideshow__btn slideshow__btn--prev" aria-label="Anterior">&#8249;</button>
+                    <button class="slideshow__btn slideshow__btn--next" aria-label="Siguiente">&#8250;</button>
+                    <div class="slideshow__dots"></div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="detail-hero__content">
+                {% if course.category %}
+                    <span class="detail-category">{{ course.category.name }}</span>
+                {% endif %}
+                <h1 class="detail-title">{{ course.name }}</h1>
+                <p class="detail-subtitle">{{ course.short_description }}</p>
+
+                <ul class="detail-meta">
+                    <li><span class="meta-label">Duración</span> {{ course.duration_weeks }} semanas</li>
+                    <li><span class="meta-label">Horas totales</span> {{ course.total_hours }} hrs</li>
+                    <li><span class="meta-label">Idioma</span> {{ course.language }}</li>
+                    <li><span class="meta-label">Precio</span> ${{ course.monthly_price }}/mes</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Cuerpo del curso -->
+<section class="detail-body">
+    <div class="courses-container detail-grid">
+
+        <!-- Columna principal -->
+        <div class="detail-main">
+
+            <!-- Descripción -->
+            <div class="detail-section">
+                <h2 class="detail-section__title">Descripción del curso</h2>
+                <p>{{ course.description }}</p>
+            </div>
+
+            <!-- Objetivos -->
+            <div class="detail-section">
+                <h2 class="detail-section__title">¿Qué aprenderás?</h2>
+                <p>{{ course.objectives }}</p>
+            </div>
+
+            <!-- Requisitos -->
+            {% if course.requirements %}
+                <div class="detail-section">
+                    <h2 class="detail-section__title">Requisitos previos</h2>
+                    <p>{{ course.requirements }}</p>
+                </div>
+            {% endif %}
+
+            <!-- Dirigido a -->
+            {% if course.target_audience %}
+                <div class="detail-section">
+                    <h2 class="detail-section__title">¿A quién va dirigido?</h2>
+                    <p>{{ course.target_audience }}</p>
+                </div>
+            {% endif %}
+
+            <!-- Temario -->
+            {% if syllabus %}
+                <div class="detail-section">
+                    <h2 class="detail-section__title">Temario</h2>
+                    <ol class="syllabus-list">
+                        {% for item in syllabus %}
+                            <li class="syllabus-item">
+                                <div class="syllabus-item__header">
+                                    <span class="syllabus-number">{{ item.order }}</span>
+                                    <strong>{{ item.title }}</strong>
+                                </div>
+                                {% if item.description %}
+                                    <p class="syllabus-item__desc">{{ item.description }}</p>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Columna lateral: grupos disponibles -->
+        <aside class="detail-sidebar">
+            <div class="sidebar-card">
+                <h2 class="sidebar-card__title">Grupos disponibles</h2>
+
+                {% if groups %}
+                    {% for group in groups %}
+                        <div class="group-card">
+                            <div class="group-card__header">
+                                <span class="group-name">{{ group.name }}</span>
+                                <span class="group-shift group-shift--{{ group.shift }}">
+                                    {{ group.get_shift_display }}
+                                </span>
+                            </div>
+
+                            <ul class="group-info">
+                                <li>
+                                    <span class="group-info__label">Inicio</span>
+                                    {{ group.start_date|date:"d/m/Y" }}
+                                </li>
+                                <li>
+                                    <span class="group-info__label">Fin</span>
+                                    {{ group.end_date|date:"d/m/Y" }}
+                                </li>
+                                <li>
+                                    <span class="group-info__label">Inscripción hasta</span>
+                                    {{ group.enrollment_deadline|date:"d/m/Y" }}
+                                </li>
+                                <li>
+                                    <span class="group-info__label">Lugares disponibles</span>
+                                    {% if group.is_full %}
+                                        <span class="spots-full">Sin lugares</span>
+                                    {% else %}
+                                        <span class="spots-available">{{ group.available_spots }} lugares</span>
+                                    {% endif %}
+                                </li>
+                            </ul>
+
+                            <a href="{% url 'courses:group_detail' course.slug group.id %}" class="btn-group-detail">
+                                Ver detalle del grupo →
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-groups">No hay grupos disponibles en este momento.</p>
+                {% endif %}
+            </div>
+        </aside>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'courses/js/courses.js' %}"></script>
+{% endblock %}

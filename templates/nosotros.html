@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nosotros — CECATI 97{% endblock %}
+{% block nav_nosotros %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="page-hero">
+    <div class="page-hero__inner">
+        <h1 class="page-hero__title">Nosotros</h1>
+        <p class="page-hero__subtitle">Más de 20 años formando profesionales de excelencia</p>
+    </div>
+</section>
+
+<!-- Historia -->
+<section class="page-section">
+    <div class="page-container">
+        <div class="two-col">
+            <div class="two-col__text">
+                <span class="section-label">Nuestra historia</span>
+                <h2 class="section-title">De un salón a una institución de referencia</h2>
+                <p>CECATI 97 nació en 1997 con la visión de ofrecer capacitación técnica y profesional de alta calidad. Lo que comenzó como un pequeño centro con tres cursos y una docena de estudiantes, hoy es una institución reconocida con más de 50 programas activos y miles de egresados en el mercado laboral.</p>
+                <p>A lo largo de los años hemos adaptado nuestra oferta académica a las necesidades reales de las empresas y del mercado, manteniendo siempre nuestro compromiso con la calidad y la accesibilidad.</p>
+            </div>
+            <div class="two-col__visual">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-card__number">20+</span>
+                        <span class="stat-card__label">Años de experiencia</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__number">5,000+</span>
+                        <span class="stat-card__label">Egresados</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__number">50+</span>
+                        <span class="stat-card__label">Programas activos</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__number">98%</span>
+                        <span class="stat-card__label">Satisfacción</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Misión y Visión -->
+<section class="page-section page-section--gray">
+    <div class="page-container">
+        <div class="mv-grid">
+            <div class="mv-card mv-card--mision">
+                <div class="mv-card__icon">🎯</div>
+                <h2 class="mv-card__title">Misión</h2>
+                <p class="mv-card__text">Brindar educación y capacitación de calidad que impulse el desarrollo profesional de nuestros estudiantes, proporcionando herramientas prácticas y actualizadas que respondan a las demandas del mercado laboral.</p>
+            </div>
+            <div class="mv-card mv-card--vision">
+                <div class="mv-card__icon">🔭</div>
+                <h2 class="mv-card__title">Visión</h2>
+                <p class="mv-card__text">Ser la institución de capacitación líder de la región, reconocida por la excelencia académica, la innovación educativa y el impacto positivo en el desarrollo económico y social de nuestra comunidad.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Valores -->
+<section class="page-section">
+    <div class="page-container">
+        <div class="section-header">
+            <span class="section-label">Lo que nos define</span>
+            <h2 class="section-title">Nuestros valores</h2>
+        </div>
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-card__icon">
+                    {% if valores_images.0 %}<img src="{{ valores_images.0.url }}" alt="Excelencia">{% else %}⭐{% endif %}
+                </div>
+                <h3 class="value-card__title">Excelencia</h3>
+                <p class="value-card__text">Nos esforzamos por ofrecer la más alta calidad en cada curso, instructor y material educativo.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-card__icon">
+                    {% if valores_images.1 %}<img src="{{ valores_images.1.url }}" alt="Compromiso">{% else %}🤝{% endif %}
+                </div>
+                <h3 class="value-card__title">Compromiso</h3>
+                <p class="value-card__text">Estamos comprometidos con el éxito de cada estudiante, acompañándolo en cada etapa de su formación.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-card__icon">
+                    {% if valores_images.2 %}<img src="{{ valores_images.2.url }}" alt="Innovación">{% else %}💡{% endif %}
+                </div>
+                <h3 class="value-card__title">Innovación</h3>
+                <p class="value-card__text">Actualizamos constantemente nuestros programas para que siempre estén alineados con las tendencias del sector.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-card__icon">
+                    {% if valores_images.3 %}<img src="{{ valores_images.3.url }}" alt="Inclusión">{% else %}🌍{% endif %}
+                </div>
+                <h3 class="value-card__title">Inclusión</h3>
+                <p class="value-card__text">Creemos que la educación de calidad debe ser accesible para todos, sin importar su condición.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Equipo -->
+<section class="page-section page-section--gray">
+    <div class="page-container">
+        <div class="section-header">
+            <span class="section-label">Las personas detrás de EduCentro</span>
+            <h2 class="section-title">Nuestro equipo directivo</h2>
+        </div>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-card__photo">
+                    {% if equipo_images.0 %}<img src="{{ equipo_images.0.url }}" alt="María González">{% else %}MG{% endif %}
+                </div>
+                <h3 class="team-card__name">María González</h3>
+                <span class="team-card__role">Directora General</span>
+                <p class="team-card__bio">Licenciada en Pedagogía con maestría en Gestión Educativa. Más de 15 años liderando instituciones de capacitación.</p>
+            </div>
+            <div class="team-card">
+                <div class="team-card__photo">
+                    {% if equipo_images.1 %}<img src="{{ equipo_images.1.url }}" alt="Carlos Ramírez">{% else %}CR{% endif %}
+                </div>
+                <h3 class="team-card__name">Carlos Ramírez</h3>
+                <span class="team-card__role">Director Académico</span>
+                <p class="team-card__bio">Doctor en Ciencias de la Educación. Especialista en diseño curricular y evaluación de competencias.</p>
+            </div>
+            <div class="team-card">
+                <div class="team-card__photo">
+                    {% if equipo_images.2 %}<img src="{{ equipo_images.2.url }}" alt="Ana López">{% else %}AL{% endif %}
+                </div>
+                <h3 class="team-card__name">Ana López</h3>
+                <span class="team-card__role">Coordinadora de Servicios</span>
+                <p class="team-card__bio">Experta en atención al estudiante y gestión de procesos administrativos educativos.</p>
+            </div>
+            <div class="team-card">
+                <div class="team-card__photo">
+                    {% if equipo_images.3 %}<img src="{{ equipo_images.3.url }}" alt="Jorge Pérez">{% else %}JP{% endif %}
+                </div>
+                <h3 class="team-card__name">Jorge Pérez</h3>
+                <span class="team-card__role">Director de Tecnología</span>
+                <p class="team-card__bio">Ingeniero en Sistemas con especialización en plataformas educativas y transformación digital.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

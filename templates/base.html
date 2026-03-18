@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CECATI 97{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <header class="navbar">
+        <nav class="nav-container">
+
+            <!-- Logo -->
+            <a href="{% url 'home' %}" class="nav-logo">
+                <img src="https://res.cloudinary.com/dio0lm9ns/image/upload/v1773733102/logo-cecati-v1_zgubkx.png"
+                     alt="Logo CECATI 97"
+                     height="40">
+                <span>CECATI 97</span>
+            </a>
+
+            <!-- Hamburger (mobile) -->
+            <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">
+                <span></span><span></span><span></span>
+            </button>
+
+            <!-- Links -->
+            <ul class="nav-links" id="navLinks">
+                <li><a href="{% url 'home' %}" class="nav-link {% block nav_inicio %}{% endblock %}">Inicio</a></li>
+                <li><a href="{% url 'nosotros' %}" class="nav-link {% block nav_nosotros %}{% endblock %}">Nosotros</a></li>
+                <li><a href="{% url 'courses:course_list' %}" class="nav-link {% block nav_cursos %}{% endblock %}">Cursos</a></li>
+                <li><a href="{% url 'enrollments:registration' %}" class="nav-link {% block nav_registro %}{% endblock %}">Inscripciones</a></li>
+
+                <!-- Soporte dropdown -->
+                <li class="nav-dropdown">
+                    <button class="nav-link dropdown-toggle" aria-expanded="false">
+                        Soporte <span class="dropdown-arrow">▾</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'faq' %}" class="dropdown-item">Preguntas frecuentes</a></li>
+                        <li><a href="{% url 'contacto' %}" class="dropdown-item">Contacto</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:profile' %}" class="nav-link nav-acceso">{{ request.user.get_full_name }}</a>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="nav-link nav-acceso">Acceso</a>
+                    {% endif %}
+                </li>
+            </ul>
+
+        </nav>
+    </header>
+
+    <!-- Mensajes globales -->
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="message message--{{ message.tags }}">
+                    {{ message }}
+                    <button class="message-close" onclick="this.parentElement.remove()">✕</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                {% if site_logo %}
+                    <img src="{{ site_logo.url }}" alt="Logo CECATI 97" class="footer-logo">
+                {% endif %}
+                <div class="footer-brand__text">
+                    <span class="logo-text">CECATI 97</span>
+                    <p>Formación profesional de calidad.</p>
+                </div>
+            </div>
+            <div class="footer-right">
+                <ul class="footer-links">
+                    <li><a href="{% url 'faq' %}">Preguntas frecuentes</a></li>
+                    <li><a href="{% url 'contacto' %}">Contacto</a></li>
+                    <li><a href="#">Aviso de privacidad</a></li>
+                </ul>
+                <p class="footer-copy">&copy; {% now "Y" %} CECATI 97. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CECATI 97 — Capacitación para el trabajo{% endblock %}
+{% block nav_inicio %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ─── HERO BANNER ─── -->
+<section class="hero" aria-label="Bienvenida">
+    <div class="hero__bg">
+        {% if hero_banners %}
+            {% for banner in hero_banners %}
+                <img src="{{ banner.url }}" alt="" aria-hidden="true"
+                     class="hero__img{% if forloop.first %} hero__img--active{% endif %}">
+            {% endfor %}
+        {% else %}
+            <img src="{% static 'img/hero-bg.jpg' %}" alt="" aria-hidden="true"
+                 class="hero__img hero__img--active">
+        {% endif %}
+        <div class="hero__overlay" aria-hidden="true"></div>
+    </div>
+
+    <div class="hero__content">
+        <div class="hero__inner">
+            <span class="hero__eyebrow">Centro de Capacitación para el Trabajo Industrial</span>
+            <h1 class="hero__title">
+                Aprende una habilidad.<br>
+                Transforma tu futuro.
+            </h1>
+            <p class="hero__subtitle">
+                En CECATI 97 ofrecemos cursos de capacitación técnica y profesional
+                con horarios flexibles, cuotas accesibles y certificado oficial.
+            </p>
+            <div class="hero__actions">
+                <a href="{% url 'courses:course_list' %}" class="hero__btn hero__btn--primary">
+                    Ver cursos disponibles →
+                </a>
+                <a href="{% url 'contacto' %}" class="hero__btn hero__btn--secondary">
+                    Solicitar información
+                </a>
+            </div>
+        </div>
+    </div>
+    {% if hero_banners|length > 1 %}
+    <div class="hero__dots" aria-hidden="true"></div>
+    {% endif %}
+</section>
+
+<!-- ─── STATS RÁPIDAS ─── -->
+<section class="quick-stats" aria-label="Cifras de CECATI 97">
+    <div class="home-container">
+        <ul class="quick-stats__list">
+            <li class="quick-stat">
+                <span class="quick-stat__num">20+</span>
+                <span class="quick-stat__label">Años de experiencia</span>
+            </li>
+            <li class="quick-stat">
+                <span class="quick-stat__num">5,000+</span>
+                <span class="quick-stat__label">Egresados</span>
+            </li>
+            <li class="quick-stat">
+                <span class="quick-stat__num">50+</span>
+                <span class="quick-stat__label">Cursos activos</span>
+            </li>
+            <li class="quick-stat">
+                <span class="quick-stat__num">98%</span>
+                <span class="quick-stat__label">Satisfacción</span>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- ─── CURSOS DESTACADOS ─── -->
+<section class="home-section" aria-labelledby="featured-title">
+    <div class="home-container">
+
+        <header class="home-section__header">
+            <span class="home-section__label">Lo más popular</span>
+            <h2 class="home-section__title" id="featured-title">Cursos destacados</h2>
+            <p class="home-section__subtitle">Algunos de nuestros programas más solicitados</p>
+        </header>
+
+        <div class="featured-grid">
+            {% for course in featured_courses %}
+                <article class="featured-card">
+                    <div class="featured-card__img-wrap">
+                        {% if course.cover_image %}
+                            <img src="{{ course.cover_image }}" alt="{{ course.name }}" class="featured-card__img">
+                        {% else %}
+                            <div class="featured-card__img-placeholder" aria-hidden="true">
+                                {{ course.name|first }}
+                            </div>
+                        {% endif %}
+                        {% if course.category %}
+                            <span class="featured-card__category">{{ course.category.name }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="featured-card__body">
+                        <h3 class="featured-card__name">{{ course.name }}</h3>
+                        <p class="featured-card__desc">{{ course.short_description }}</p>
+
+                        <ul class="featured-card__meta" aria-label="Detalles del curso">
+                            <li>
+                                <span class="featured-meta-icon" aria-hidden="true">⏱</span>
+                                {{ course.duration_weeks }} semanas
+                            </li>
+                            <li>
+                                <span class="featured-meta-icon" aria-hidden="true">📚</span>
+                                {{ course.total_hours }} horas totales
+                            </li>
+                            <li>
+                                <span class="featured-meta-icon" aria-hidden="true">💰</span>
+                                ${{ course.monthly_price }}/mes
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="featured-card__footer">
+                        <a href="{% url 'courses:course_detail' course.slug %}" class="featured-card__btn">
+                            Ver curso →
+                        </a>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="home-empty">No hay cursos destacados disponibles por el momento.</p>
+            {% endfor %}
+        </div>
+
+        <div class="home-section__cta">
+            <a href="{% url 'courses:course_list' %}" class="btn-outline">
+                Ver todos los cursos →
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<!-- ─── POR QUÉ CECATI 97 ─── -->
+<section class="why-section" aria-labelledby="why-title">
+    <div class="home-container">
+
+        <header class="home-section__header">
+            <span class="home-section__label">Nuestra propuesta</span>
+            <h2 class="home-section__title" id="why-title">¿Por qué elegir CECATI 97?</h2>
+            <p class="home-section__subtitle">Formación de calidad pensada para tu vida y tu trabajo</p>
+        </header>
+
+        <ul class="why-grid">
+            <li class="why-card">
+                <span class="why-card__icon" aria-hidden="true">💳</span>
+                <h3 class="why-card__title">Cuotas accesibles</h3>
+                <p class="why-card__text">Nuestros programas tienen cuotas mensuales diseñadas para que la capacitación no sea una barrera económica.</p>
+            </li>
+            <li class="why-card">
+                <span class="why-card__icon" aria-hidden="true">🕐</span>
+                <h3 class="why-card__title">Horarios flexibles</h3>
+                <p class="why-card__text">Grupos en turno matutino, vespertino y sabatino para que puedas estudiar sin descuidar tus otras responsabilidades.</p>
+            </li>
+            <li class="why-card">
+                <span class="why-card__icon" aria-hidden="true">🎓</span>
+                <h3 class="why-card__title">Certificado oficial</h3>
+                <p class="why-card__text">Al concluir tu curso recibes un certificado con validez oficial que respalda tus nuevas habilidades ante cualquier empleador.</p>
+            </li>
+            <li class="why-card">
+                <span class="why-card__icon" aria-hidden="true">👨‍🏫</span>
+                <h3 class="why-card__title">Instructores certificados</h3>
+                <p class="why-card__text">Nuestro equipo docente está certificado por competencias y actualizado en las últimas tendencias de cada área.</p>
+            </li>
+            <li class="why-card">
+                <span class="why-card__icon" aria-hidden="true">💼</span>
+                <h3 class="why-card__title">Bolsa de trabajo</h3>
+                <p class="why-card__text">Conectamos a nuestros egresados con empresas del sector para facilitar su inserción o mejora laboral.</p>
+            </li>
+        </ul>
+
+    </div>
+</section>
+
+<!-- ─── CTA CURSOS ─── -->
+<section class="cta-section cta-section--courses" aria-labelledby="cta-courses-title">
+    <div class="home-container">
+        <div class="cta-box">
+            <div class="cta-box__text">
+                <h2 class="cta-box__title" id="cta-courses-title">
+                    Encuentra el curso ideal para ti
+                </h2>
+                <p class="cta-box__subtitle">
+                    Explora nuestro catálogo completo de cursos de capacitación técnica y profesional.
+                    Filtra por categoría, turno y fecha de inicio.
+                </p>
+            </div>
+            <a href="{% url 'courses:course_list' %}" class="cta-box__btn cta-box__btn--white">
+                Ver todos los cursos →
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CTA CONTACTO ─── -->
+<section class="cta-section cta-section--contact" aria-labelledby="cta-contact-title">
+    <div class="home-container">
+        <div class="cta-box cta-box--light">
+            <div class="cta-box__text">
+                <h2 class="cta-box__title cta-box__title--dark" id="cta-contact-title">
+                    ¿Tienes dudas? Estamos para ayudarte
+                </h2>
+                <p class="cta-box__subtitle cta-box__subtitle--dark">
+                    Nuestro equipo puede orientarte sobre qué curso se adapta mejor
+                    a tus objetivos, horarios y nivel de conocimiento.
+                </p>
+            </div>
+            <div class="cta-box__actions">
+                <a href="{% url 'contacto' %}" class="cta-box__btn cta-box__btn--red">
+                    Contáctanos →
+                </a>
+                <a href="{% url 'faq' %}" class="cta-box__btn cta-box__btn--outline">
+                    Preguntas frecuentes
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const imgs = document.querySelectorAll('.hero__img');
+    if (imgs.length <= 1) return;
+
+    const dotsContainer = document.querySelector('.hero__dots');
+    let current = 0;
+
+    imgs.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'hero__dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Imagen ' + (i + 1));
+        dot.addEventListener('click', () => { goTo(i); resetTimer(); });
+        dotsContainer.appendChild(dot);
+    });
+
+    function goTo(index) {
+        imgs[current].classList.remove('hero__img--active');
+        dotsContainer.children[current].classList.remove('active');
+        current = (index + imgs.length) % imgs.length;
+        imgs[current].classList.add('hero__img--active');
+        dotsContainer.children[current].classList.add('active');
+    }
+
+    let timer = setInterval(() => goTo(current + 1), 5000);
+    function resetTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => goTo(current + 1), 5000);
+    }
+})();
+</script>
+{% endblock %}

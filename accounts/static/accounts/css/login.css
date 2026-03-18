@@ -1,0 +1,19 @@
+/* accounts/static/accounts/css/login.css
+   Estilos específicos de la página de login.
+   Solo define el contexto de página completa sin navbar.
+*/
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #780a05 0%, #c0392b 60%, #e87060 100%);
+    font-family: var(--font-base);
+}

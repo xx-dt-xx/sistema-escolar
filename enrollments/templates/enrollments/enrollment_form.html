@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscripción — {{ course.name }} — CECATI 97{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'enrollments/css/enrollments.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<nav class="breadcrumb" aria-label="Ruta de navegación">
+    <div class="enroll-container">
+        <a href="{% url 'courses:course_list' %}">Cursos</a>
+        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+        <a href="{% url 'courses:course_detail' course.slug %}">{{ course.name }}</a>
+        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+        <a href="{% url 'courses:group_detail' course.slug group.id %}">{{ group.name }}</a>
+        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+        <span aria-current="page">Inscripción</span>
+    </div>
+</nav>
+
+<section class="enroll-section">
+    <div class="enroll-container">
+        <div class="enroll-grid">
+
+            <!-- Formulario wizard -->
+            <main class="enroll-main" id="main-content">
+
+                <!-- Indicador de pasos -->
+                <nav class="wizard-steps" aria-label="Pasos del formulario">
+                    <ol>
+                        <li class="wizard-step active" id="step-indicator-1" aria-current="step">
+                            <span class="wizard-step__num" aria-hidden="true">1</span>
+                            <span class="wizard-step__label">Datos personales</span>
+                        </li>
+                        <li class="wizard-step" id="step-indicator-2">
+                            <span class="wizard-step__num" aria-hidden="true">2</span>
+                            <span class="wizard-step__label">Revisión</span>
+                        </li>
+                    </ol>
+                </nav>
+
+                <form method="POST" action="{% url 'enrollments:enrollment_form' course.slug group.id %}" id="enrollForm" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Errores globales -->
+                    {% if form.non_field_errors %}
+                        <div class="enroll-alert enroll-alert--error" role="alert" aria-live="assertive">
+                            <span class="enroll-alert__icon" aria-hidden="true">⚠️</span>
+                            <div>
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="enroll-alert enroll-alert--error" role="alert" aria-live="assertive">
+                                <span class="enroll-alert__icon" aria-hidden="true">⚠️</span>
+                                <p>{{ message }}</p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- PASO 1: Datos personales -->
+                    <fieldset class="wizard-panel active" id="step-1" aria-labelledby="step1-title">
+                        <legend class="wizard-panel__title" id="step1-title">
+                            Datos personales
+                            <span class="wizard-panel__subtitle">Todos los campos son obligatorios</span>
+                        </legend>
+
+                        <!-- Nombre completo -->
+                        <div class="enroll-field {% if form.full_name.errors %}enroll-field--error{% endif %}">
+                            <label class="enroll-label" for="{{ form.full_name.id_for_label }}">
+                                Nombre completo
+                            </label>
+                            {{ form.full_name }}
+                            <span class="enroll-hint">Escribe tu nombre como aparece en tu identificación oficial.</span>
+                            {% if form.full_name.errors %}
+                                <span class="enroll-error" role="alert">
+                                    <span aria-hidden="true">✕</span>
+                                    {{ form.full_name.errors.0 }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Fecha de nacimiento -->
+                        <div class="enroll-field {% if form.date_of_birth.errors %}enroll-field--error{% endif %}">
+                            <label class="enroll-label" for="{{ form.date_of_birth.id_for_label }}">
+                                Fecha de nacimiento
+                            </label>
+                            {{ form.date_of_birth }}
+                            <span class="enroll-hint">Debes tener al menos 15 años para inscribirte.</span>
+                            {% if form.date_of_birth.errors %}
+                                <span class="enroll-error" role="alert">
+                                    <span aria-hidden="true">✕</span>
+                                    {{ form.date_of_birth.errors.0 }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="enroll-field {% if form.phone.errors %}enroll-field--error{% endif %}">
+                            <label class="enroll-label" for="{{ form.phone.id_for_label }}">
+                                Teléfono
+                            </label>
+                            {{ form.phone }}
+                            <span class="enroll-hint">Incluye el código de área. Ej: 55 1234 5678</span>
+                            {% if form.phone.errors %}
+                                <span class="enroll-error" role="alert">
+                                    <span aria-hidden="true">✕</span>
+                                    {{ form.phone.errors.0 }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Correo electrónico -->
+                        <div class="enroll-field {% if form.email.errors %}enroll-field--error{% endif %}">
+                            <label class="enroll-label" for="{{ form.email.id_for_label }}">
+                                Correo electrónico
+                            </label>
+                            {{ form.email }}
+                            <span class="enroll-hint">Se usará para enviarte tu acceso al sistema.</span>
+                            {% if form.email.errors %}
+                                <span class="enroll-error" role="alert">
+                                    <span aria-hidden="true">✕</span>
+                                    {{ form.email.errors.0 }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Dirección -->
+                        <div class="enroll-field {% if form.address.errors %}enroll-field--error{% endif %}">
+                            <label class="enroll-label" for="{{ form.address.id_for_label }}">
+                                Dirección
+                            </label>
+                            {{ form.address }}
+                            <span class="enroll-hint">Calle, número, colonia, ciudad y código postal.</span>
+                            {% if form.address.errors %}
+                                <span class="enroll-error" role="alert">
+                                    <span aria-hidden="true">✕</span>
+                                    {{ form.address.errors.0 }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Nivel de estudios -->
+                        <div class="enroll-field {% if form.education_level.errors %}enroll-field--error{% endif %}">
+                            <label class="enroll-label" for="{{ form.education_level.id_for_label }}">
+                                Nivel de estudios
+                            </label>
+                            {{ form.education_level }}
+                            {% if form.education_level.errors %}
+                                <span class="enroll-error" role="alert">
+                                    <span aria-hidden="true">✕</span>
+                                    {{ form.education_level.errors.0 }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="wizard-nav">
+                            <a href="{% url 'courses:group_detail' course.slug group.id %}" class="btn-secondary">
+                                ← Regresar
+                            </a>
+                            <button type="button" class="btn-primary" onclick="goToStep2()" id="btn-next">
+                                Revisar datos →
+                            </button>
+                        </div>
+                    </fieldset>
+
+                    <!-- PASO 2: Revisión -->
+                    <fieldset class="wizard-panel" id="step-2" aria-labelledby="step2-title" hidden>
+                        <legend class="wizard-panel__title" id="step2-title">
+                            Revisa tu información
+                            <span class="wizard-panel__subtitle">Verifica que tus datos sean correctos antes de confirmar.</span>
+                        </legend>
+
+                        <div class="review-card" aria-label="Resumen de tus datos">
+                            <div class="review-row">
+                                <span class="review-label">Nombre completo</span>
+                                <span class="review-value" id="review-name">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Fecha de nacimiento</span>
+                                <span class="review-value" id="review-dob">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Teléfono</span>
+                                <span class="review-value" id="review-phone">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Correo electrónico</span>
+                                <span class="review-value" id="review-email">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Dirección</span>
+                                <span class="review-value" id="review-address">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Nivel de estudios</span>
+                                <span class="review-value" id="review-education">—</span>
+                            </div>
+                        </div>
+
+                        <div class="enroll-alert enroll-alert--info" role="note">
+                            <span class="enroll-alert__icon" aria-hidden="true">ℹ️</span>
+                            <p>Al confirmar tu inscripción, recibirás en tu correo electrónico tu <strong>ID de acceso</strong> y una <strong>contraseña temporal</strong> para ingresar al sistema.</p>
+                        </div>
+
+                        <div class="wizard-nav">
+                            <button type="button" class="btn-secondary" onclick="goToStep1()">
+                                ← Editar datos
+                            </button>
+                            <button type="submit" class="btn-primary btn-confirm">
+                                Confirmar inscripción ✓
+                            </button>
+                        </div>
+                    </fieldset>
+
+                </form>
+            </main>
+
+            <!-- Sidebar: resumen del curso -->
+            <aside class="enroll-sidebar" aria-label="Resumen del curso">
+                <div class="enroll-summary">
+                    <h2 class="enroll-summary__title">Resumen de tu inscripción</h2>
+
+                    <div class="enroll-summary__course">
+                        <span class="enroll-summary__label">Curso</span>
+                        <strong>{{ course.name }}</strong>
+                    </div>
+
+                    <div class="enroll-summary__course">
+                        <span class="enroll-summary__label">Grupo</span>
+                        <strong>{{ group.name }}</strong>
+                    </div>
+
+                    <div class="enroll-summary__course">
+                        <span class="enroll-summary__label">Turno</span>
+                        <strong>{{ group.get_shift_display }}</strong>
+                    </div>
+
+                    <div class="enroll-summary__course">
+                        <span class="enroll-summary__label">Inicio</span>
+                        <strong>{{ group.start_date|date:"d/m/Y" }}</strong>
+                    </div>
+
+                    <div class="enroll-summary__course">
+                        <span class="enroll-summary__label">Fin</span>
+                        <strong>{{ group.end_date|date:"d/m/Y" }}</strong>
+                    </div>
+
+                    <hr class="enroll-summary__divider">
+
+                    <div class="enroll-summary__schedule">
+                        <span class="enroll-summary__label">Horario</span>
+                        {% for schedule in group.schedules.all %}
+                            <p>{{ schedule.get_day_display }}: {{ schedule.start_time|time:"H:i" }} – {{ schedule.end_time|time:"H:i" }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <hr class="enroll-summary__divider">
+
+                    <div class="enroll-summary__price">
+                        <span>Pago mensual</span>
+                        <strong>${{ course.monthly_price }}</strong>
+                    </div>
+
+                    <div class="enroll-summary__spots {% if group.is_full %}enroll-summary__spots--full{% endif %}">
+                        {% if group.is_full %}
+                            <span>⚠️ Sin lugares disponibles</span>
+                        {% else %}
+                            <span>✓ {{ group.available_spots }} lugar{{ group.available_spots|pluralize:"es" }} disponible{{ group.available_spots|pluralize:"s" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'enrollments/js/enrollments.js' %}"></script>
+{% endblock %}

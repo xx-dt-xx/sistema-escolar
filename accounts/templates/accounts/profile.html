@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi perfil — CECATI 97{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="profile-section">
+    <div class="profile-container">
+
+        <div class="profile-grid">
+
+            <!-- ─── Columna izquierda: datos del usuario ─── -->
+            <aside class="profile-sidebar">
+
+                <!-- Avatar y nombre -->
+                <div class="profile-card profile-card--hero">
+                    <div class="profile-avatar" aria-hidden="true">
+                        {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+                    </div>
+                    <h1 class="profile-name">{{ request.user.get_full_name }}</h1>
+                    <span class="profile-role profile-role--{{ request.user.role }}">
+                        {{ request.user.get_role_display }}
+                    </span>
+                </div>
+
+                <!-- Accesos rápidos -->
+                <nav class="profile-card profile-quick-nav" aria-label="Accesos rápidos">
+                    <h2 class="profile-card__title">Accesos rápidos</h2>
+                    <ul>
+                        <li>
+                            <a href="{% url 'enrollments:my_courses' %}" class="quick-link">
+                                <span class="quick-link__icon" aria-hidden="true">📚</span>
+                                <span>Mis cursos activos</span>
+                                <span class="quick-link__arrow" aria-hidden="true">›</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'enrollments:course_history' %}" class="quick-link">
+                                <span class="quick-link__icon" aria-hidden="true">🎓</span>
+                                <span>Historial de cursos</span>
+                                <span class="quick-link__arrow" aria-hidden="true">›</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'accounts:change_password' %}" class="quick-link">
+                                <span class="quick-link__icon" aria-hidden="true">🔐</span>
+                                <span>Cambiar contraseña</span>
+                                <span class="quick-link__arrow" aria-hidden="true">›</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'accounts:logout' %}" class="quick-link quick-link--danger">
+                                <span class="quick-link__icon" aria-hidden="true">🚪</span>
+                                <span>Cerrar sesión</span>
+                                <span class="quick-link__arrow" aria-hidden="true">›</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+            </aside>
+
+            <!-- ─── Columna derecha: información y cursos ─── -->
+            <main class="profile-main">
+
+                <!-- Datos personales -->
+                <div class="profile-card">
+                    <h2 class="profile-card__title">Información personal</h2>
+
+                    <dl class="profile-info-list">
+                        <div class="profile-info-row">
+                            <dt class="profile-info-label">ID de usuario</dt>
+                            <dd class="profile-info-value">
+                                <code class="profile-id">{{ request.user.id }}</code>
+                            </dd>
+                        </div>
+                        <div class="profile-info-row">
+                            <dt class="profile-info-label">Nombre completo</dt>
+                            <dd class="profile-info-value">{{ request.user.get_full_name|default:"—" }}</dd>
+                        </div>
+                        <div class="profile-info-row">
+                            <dt class="profile-info-label">Correo electrónico</dt>
+                            <dd class="profile-info-value">{{ request.user.email|default:"—" }}</dd>
+                        </div>
+                        <div class="profile-info-row">
+                            <dt class="profile-info-label">Teléfono</dt>
+                            <dd class="profile-info-value">{{ request.user.phone|default:"—" }}</dd>
+                        </div>
+                        {% if request.user.is_student and request.user.student_profile.date_of_birth %}
+                            <div class="profile-info-row">
+                                <dt class="profile-info-label">Fecha de nacimiento</dt>
+                                <dd class="profile-info-value">
+                                    {{ request.user.student_profile.date_of_birth|date:"d/m/Y" }}
+                                </dd>
+                            </div>
+                        {% endif %}
+                    </dl>
+                </div>
+
+                <!-- Cursos inscritos -->
+                <div class="profile-card">
+                    <div class="profile-card__header">
+                        <h2 class="profile-card__title">Cursos inscritos</h2>
+                        <a href="{% url 'enrollments:my_courses' %}" class="profile-card__link">
+                            Ver todos →
+                        </a>
+                    </div>
+
+                    {% with enrollments=request.user.enrollments.all %}
+                        {% if enrollments %}
+                            <ul class="profile-courses-list">
+                                {% for enrollment in enrollments %}
+                                    <li class="profile-course-item">
+                                        <div class="profile-course-item__info">
+                                            <span class="profile-course-item__name">
+                                                {{ enrollment.group.course.name }}
+                                            </span>
+                                            <span class="profile-course-item__group">
+                                                {{ enrollment.group.name }} —
+                                                {{ enrollment.group.get_shift_display }}
+                                            </span>
+                                            <div class="profile-course-item__schedule">
+                                                {% for schedule in enrollment.group.schedules.all %}
+                                                    <span class="schedule-pill">
+                                                        {{ schedule.get_day_display }}
+                                                        {{ schedule.start_time|time:"H:i" }}–{{ schedule.end_time|time:"H:i" }}
+                                                    </span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <span class="enrollment-status enrollment-status--{{ enrollment.status }}">
+                                            {{ enrollment.get_status_display }}
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="profile-empty">
+                                <span aria-hidden="true">📋</span>
+                                <p>No tienes cursos inscritos aún.</p>
+                                <a href="{% url 'enrollments:registration' %}" class="profile-empty__link">
+                                    Inscríbete a un curso →
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+            </main>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}

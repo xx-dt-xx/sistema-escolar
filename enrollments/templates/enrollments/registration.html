@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscripciones — CECATI 97{% endblock %}
+{% block nav_registro %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'enrollments/css/enrollments.css' %}">
+<link rel="stylesheet" href="{% static 'enrollments/css/registration.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="reg-hero" aria-label="Inscripciones">
+    <div class="reg-hero__inner">
+        <h1 class="reg-hero__title">Inscripciones</h1>
+        <p class="reg-hero__subtitle">Selecciona tu curso, elige un horario y completa tu registro en minutos.</p>
+    </div>
+</section>
+
+<section class="reg-section">
+    <div class="reg-container">
+
+        <!-- Indicador de pasos -->
+        <nav class="wizard-steps" aria-label="Pasos del formulario">
+            <ol>
+                <li class="wizard-step active" id="step-indicator-1" aria-current="step">
+                    <span class="wizard-step__num" aria-hidden="true">1</span>
+                    <span class="wizard-step__label">Curso y horario</span>
+                </li>
+                <li class="wizard-step" id="step-indicator-2">
+                    <span class="wizard-step__num" aria-hidden="true">2</span>
+                    <span class="wizard-step__label">Datos personales</span>
+                </li>
+                <li class="wizard-step" id="step-indicator-3">
+                    <span class="wizard-step__num" aria-hidden="true">3</span>
+                    <span class="wizard-step__label">Confirmación</span>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="reg-grid">
+
+            <!-- Formulario principal -->
+            <main class="reg-main" id="main-content">
+
+                <!-- ── PASO 1: Curso y grupo ── -->
+                <div class="wizard-panel active" id="step-1" aria-labelledby="step1-title">
+                    <h2 class="wizard-panel__title" id="step1-title">
+                        Selecciona tu curso y horario
+                        <span class="wizard-panel__subtitle">Escribe el nombre del curso o selecciónalo de la lista.</span>
+                    </h2>
+
+                    <!-- Dropdown de búsqueda de cursos -->
+                    <div class="reg-field" id="field-course">
+                        <label class="enroll-label" for="courseSearch">Curso</label>
+                        <div class="searchable-select" id="courseDropdown">
+                            <div class="searchable-select__control" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-controls="courseList">
+                                <input
+                                    type="text"
+                                    id="courseSearch"
+                                    class="searchable-select__input"
+                                    placeholder="Escribe o selecciona un curso..."
+                                    autocomplete="off"
+                                    aria-label="Buscar curso"
+                                    aria-autocomplete="list"
+                                    aria-controls="courseList"
+                                />
+                                <span class="searchable-select__arrow" aria-hidden="true">▾</span>
+                            </div>
+                            <ul class="searchable-select__list" id="courseList" role="listbox" aria-label="Cursos disponibles" hidden>
+                                {% for course in courses %}
+                                    <li class="searchable-select__option"
+                                        role="option"
+                                        aria-selected="false"
+                                        data-value="{{ course.id }}"
+                                        data-label="{{ course.name }}"
+                                        data-category="{{ course.category.name|default:'' }}">
+                                        <span class="option-name">{{ course.name }}</span>
+                                        {% if course.category %}
+                                            <span class="option-category">{{ course.category.name }}</span>
+                                        {% endif %}
+                                    </li>
+                                {% empty %}
+                                    <li class="searchable-select__empty" role="option" aria-disabled="true">
+                                        No hay cursos disponibles.
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <span class="enroll-hint">Solo se muestran cursos con grupos abiertos actualmente.</span>
+                        <span class="enroll-error" id="error-course" role="alert" hidden>
+                            <span aria-hidden="true">✕</span> Selecciona un curso para continuar.
+                        </span>
+                    </div>
+
+                    <!-- Grupos disponibles (aparece dinámicamente) -->
+                    <div id="groupsSection" hidden>
+                        <div class="groups-loading" id="groupsLoading" hidden aria-live="polite">
+                            <span class="groups-loading__spinner" aria-hidden="true"></span>
+                            Cargando grupos disponibles...
+                        </div>
+
+                        <div id="groupsContent">
+                            <h3 class="groups-title" id="groups-title">Grupos disponibles</h3>
+                            <p class="groups-subtitle" id="groups-subtitle"></p>
+                            <div class="groups-grid" id="groupsGrid" role="radiogroup" aria-labelledby="groups-title">
+                                <!-- Se genera dinámicamente con JS -->
+                            </div>
+                            <span class="enroll-error" id="error-group" role="alert" hidden>
+                                <span aria-hidden="true">✕</span> Selecciona un grupo para continuar.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="wizard-nav">
+                        <a href="{% url 'home' %}" class="btn-secondary">← Regresar</a>
+                        <button type="button" class="btn-primary" id="btnStep1Next" onclick="goFromStep1()">
+                            Continuar →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ── PASO 2: Datos personales ── -->
+                <div class="wizard-panel" id="step-2" aria-labelledby="step2-title" hidden>
+                    <h2 class="wizard-panel__title" id="step2-title">
+                        Datos personales
+                        <span class="wizard-panel__subtitle">Todos los campos son obligatorios.</span>
+                    </h2>
+
+                    <div class="enroll-field" id="field-full_name">
+                        <label class="enroll-label" for="id_full_name">Nombre completo</label>
+                        <input type="text" id="id_full_name" name="full_name" placeholder="Como aparece en tu identificación oficial" autocomplete="name">
+                        <span class="enroll-hint">Escribe tu nombre como aparece en tu identificación oficial.</span>
+                        <span class="enroll-error" id="error-full_name" role="alert" hidden><span aria-hidden="true">✕</span> <span class="error-msg"></span></span>
+                    </div>
+
+                    <div class="enroll-field" id="field-date_of_birth">
+                        <label class="enroll-label" for="id_date_of_birth">Fecha de nacimiento</label>
+                        <input type="date" id="id_date_of_birth" name="date_of_birth" autocomplete="bday">
+                        <span class="enroll-hint">Debes tener al menos 15 años para inscribirte.</span>
+                        <span class="enroll-error" id="error-date_of_birth" role="alert" hidden><span aria-hidden="true">✕</span> <span class="error-msg"></span></span>
+                    </div>
+
+                    <div class="enroll-field" id="field-phone">
+                        <label class="enroll-label" for="id_phone">Teléfono</label>
+                        <input type="tel" id="id_phone" name="phone" placeholder="55 1234 5678" autocomplete="tel">
+                        <span class="enroll-hint">Incluye el código de área.</span>
+                        <span class="enroll-error" id="error-phone" role="alert" hidden><span aria-hidden="true">✕</span> <span class="error-msg"></span></span>
+                    </div>
+
+                    <div class="enroll-field" id="field-email">
+                        <label class="enroll-label" for="id_email">Correo electrónico</label>
+                        <input type="email" id="id_email" name="email" placeholder="tu@correo.com" autocomplete="email">
+                        <span class="enroll-hint">Se usará para enviarte tu acceso al sistema.</span>
+                        <span class="enroll-error" id="error-email" role="alert" hidden><span aria-hidden="true">✕</span> <span class="error-msg"></span></span>
+                    </div>
+
+                    <div class="enroll-field" id="field-address">
+                        <label class="enroll-label" for="id_address">Dirección</label>
+                        <textarea id="id_address" name="address" rows="3" placeholder="Calle, número, colonia, ciudad y código postal" autocomplete="street-address"></textarea>
+                        <span class="enroll-error" id="error-address" role="alert" hidden><span aria-hidden="true">✕</span> <span class="error-msg"></span></span>
+                    </div>
+
+                    <div class="enroll-field" id="field-education_level">
+                        <label class="enroll-label" for="id_education_level">Nivel de estudios</label>
+                        <select id="id_education_level" name="education_level">
+                            <option value="" disabled selected>Selecciona tu nivel de estudios</option>
+                            <option value="elementary">Primaria</option>
+                            <option value="middle">Secundaria</option>
+                            <option value="high">Preparatoria / Bachillerato</option>
+                            <option value="bachelor">Licenciatura</option>
+                            <option value="postgrad">Posgrado</option>
+                        </select>
+                        <span class="enroll-error" id="error-education_level" role="alert" hidden><span aria-hidden="true">✕</span> <span class="error-msg"></span></span>
+                    </div>
+
+                    <div class="wizard-nav">
+                        <button type="button" class="btn-secondary" onclick="goToStep(1)">← Regresar</button>
+                        <button type="button" class="btn-primary" onclick="goFromStep2()">Revisar datos →</button>
+                    </div>
+                </div>
+
+                <!-- ── PASO 3: Revisión y confirmación ── -->
+                <div class="wizard-panel" id="step-3" aria-labelledby="step3-title" hidden>
+                    <h2 class="wizard-panel__title" id="step3-title">
+                        Revisa tu información
+                        <span class="wizard-panel__subtitle">Verifica que todos tus datos sean correctos antes de confirmar.</span>
+                    </h2>
+
+                    <!-- Resumen del curso -->
+                    <h3 class="review-section-title">Curso y horario seleccionado</h3>
+                    <div class="review-card" aria-label="Curso seleccionado">
+                        <div class="review-row">
+                            <span class="review-label">Curso</span>
+                            <span class="review-value" id="review-course">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Grupo</span>
+                            <span class="review-value" id="review-group">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Turno</span>
+                            <span class="review-value" id="review-shift">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Horario</span>
+                            <span class="review-value" id="review-schedule">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Inicio</span>
+                            <span class="review-value" id="review-start">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Pago mensual</span>
+                            <span class="review-value" id="review-price">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Resumen datos personales -->
+                    <h3 class="review-section-title">Datos personales</h3>
+                    <div class="review-card" aria-label="Datos personales">
+                        <div class="review-row">
+                            <span class="review-label">Nombre</span>
+                            <span class="review-value" id="review-name">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Fecha de nacimiento</span>
+                            <span class="review-value" id="review-dob">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Teléfono</span>
+                            <span class="review-value" id="review-phone">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Correo</span>
+                            <span class="review-value" id="review-email">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Dirección</span>
+                            <span class="review-value" id="review-address">—</span>
+                        </div>
+                        <div class="review-row">
+                            <span class="review-label">Nivel de estudios</span>
+                            <span class="review-value" id="review-education">—</span>
+                        </div>
+                    </div>
+
+                    <div class="enroll-alert enroll-alert--info" role="note">
+                        <span class="enroll-alert__icon" aria-hidden="true">ℹ️</span>
+                        <p>Al confirmar recibirás en tu correo tu <strong>ID de acceso</strong> y <strong>contraseña temporal</strong>.</p>
+                    </div>
+
+                    <!-- Formulario oculto que se envía al servidor -->
+                    <form method="POST" id="enrollForm" action="" aria-hidden="true">
+                        {% csrf_token %}
+                        <input type="hidden" name="full_name" id="hidden_full_name">
+                        <input type="hidden" name="date_of_birth" id="hidden_date_of_birth">
+                        <input type="hidden" name="phone" id="hidden_phone">
+                        <input type="hidden" name="email" id="hidden_email">
+                        <input type="hidden" name="address" id="hidden_address">
+                        <input type="hidden" name="education_level" id="hidden_education_level">
+                    </form>
+
+                    <div class="wizard-nav">
+                        <button type="button" class="btn-secondary" onclick="goToStep(2)">← Editar datos</button>
+                        <button type="button" class="btn-primary btn-confirm" onclick="submitEnrollment()">
+                            Confirmar inscripción ✓
+                        </button>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Sidebar resumen -->
+            <aside class="enroll-sidebar" id="enrollSidebar" aria-label="Resumen de tu selección">
+                <div class="enroll-summary">
+                    <h2 class="enroll-summary__title">Tu selección</h2>
+
+                    <div id="sidebarEmpty" class="sidebar-empty">
+                        <span aria-hidden="true">📋</span>
+                        <p>Selecciona un curso para ver el resumen aquí.</p>
+                    </div>
+
+                    <div id="sidebarContent" hidden>
+                        <div class="enroll-summary__course">
+                            <span class="enroll-summary__label">Curso</span>
+                            <strong id="sidebar-course">—</strong>
+                        </div>
+                        <div class="enroll-summary__course" id="sidebar-group-section" hidden>
+                            <span class="enroll-summary__label">Grupo</span>
+                            <strong id="sidebar-group">—</strong>
+                        </div>
+                        <div class="enroll-summary__course" id="sidebar-shift-section" hidden>
+                            <span class="enroll-summary__label">Turno</span>
+                            <strong id="sidebar-shift">—</strong>
+                        </div>
+                        <div class="enroll-summary__course" id="sidebar-dates-section" hidden>
+                            <span class="enroll-summary__label">Inicio</span>
+                            <strong id="sidebar-start">—</strong>
+                        </div>
+
+                        <hr class="enroll-summary__divider" id="sidebar-schedule-divider" hidden>
+
+                        <div class="enroll-summary__schedule" id="sidebar-schedule-section" hidden>
+                            <span class="enroll-summary__label">Horario</span>
+                            <div id="sidebar-schedule"></div>
+                        </div>
+
+                        <hr class="enroll-summary__divider" id="sidebar-price-divider" hidden>
+
+                        <div class="enroll-summary__price" id="sidebar-price-section" hidden>
+                            <span>Pago mensual</span>
+                            <strong id="sidebar-price">—</strong>
+                        </div>
+
+                        <div class="enroll-summary__spots" id="sidebar-spots" hidden></div>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // URL de la API para obtener grupos
+    window.API_GROUPS_URL = "{% url 'enrollments:course_groups_api' 0 %}".split('0/grupos/')[0];
+</script>
+<script src="{% static 'enrollments/js/registration.js' %}"></script>
+{% endblock %}

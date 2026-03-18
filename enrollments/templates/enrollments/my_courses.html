@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis Cursos — CECATI 97{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'enrollments/css/enrollments.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="enroll-section">
+    <div class="enroll-container">
+
+        <header class="my-courses-header">
+            <div>
+                <h1 class="my-courses-title">Mis cursos</h1>
+                <p class="my-courses-subtitle">Bienvenido, <strong>{{ request.user.get_full_name }}</strong></p>
+            </div>
+            <a href="{% url 'enrollments:course_history' %}" class="btn-secondary btn-secondary--sm">
+                Ver historial →
+            </a>
+        </header>
+
+        {% if enrollments %}
+            <div class="my-courses-grid" role="list">
+                {% for enrollment in enrollments %}
+                    <article class="my-course-card" role="listitem">
+
+                        <div class="my-course-card__header">
+                            <div>
+                                <span class="my-course-card__category">
+                                    {{ enrollment.group.course.category.name|default:"Sin categoría" }}
+                                </span>
+                                <h2 class="my-course-card__name">
+                                    {{ enrollment.group.course.name }}
+                                </h2>
+                            </div>
+                            <span class="group-status group-status--{{ enrollment.group.status }}">
+                                {{ enrollment.group.get_status_display }}
+                            </span>
+                        </div>
+
+                        <ul class="my-course-card__info" aria-label="Detalles del curso">
+                            <li>
+                                <span class="info-label">Grupo</span>
+                                <span>{{ enrollment.group.name }}</span>
+                            </li>
+                            <li>
+                                <span class="info-label">Turno</span>
+                                <span class="group-shift group-shift--{{ enrollment.group.shift }}">
+                                    {{ enrollment.group.get_shift_display }}
+                                </span>
+                            </li>
+                            <li>
+                                <span class="info-label">Inicio</span>
+                                <span>{{ enrollment.group.start_date|date:"d/m/Y" }}</span>
+                            </li>
+                            <li>
+                                <span class="info-label">Fin</span>
+                                <span>{{ enrollment.group.end_date|date:"d/m/Y" }}</span>
+                            </li>
+                            <li>
+                                <span class="info-label">Pago mensual</span>
+                                <span>${{ enrollment.group.course.monthly_price }}</span>
+                            </li>
+                        </ul>
+
+                        <div class="my-course-card__schedule" aria-label="Horario">
+                            <span class="info-label">Horario</span>
+                            <div class="schedule-pills">
+                                {% for schedule in enrollment.group.schedules.all %}
+                                    <span class="schedule-pill">
+                                        {{ schedule.get_day_display }}
+                                        {{ schedule.start_time|time:"H:i" }}–{{ schedule.end_time|time:"H:i" }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="my-course-card__footer">
+                            <a href="{% url 'courses:group_detail' enrollment.group.course.slug enrollment.group.id %}"
+                               class="btn-secondary btn-secondary--sm">
+                                Ver detalles
+                            </a>
+                        </div>
+
+                    </article>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div class="enroll-empty" role="status">
+                <span class="enroll-empty__icon" aria-hidden="true">📚</span>
+                <h2 class="enroll-empty__title">No tienes cursos activos</h2>
+                <p class="enroll-empty__text">Explora nuestro catálogo y encuentra el curso ideal para ti.</p>
+                <a href="{% url 'courses:course_list' %}" class="btn-primary">Ver cursos disponibles →</a>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}
