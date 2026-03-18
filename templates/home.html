@@ -18,9 +18,6 @@
                 <img src="{{ banner.url }}" alt="" aria-hidden="true"
                      class="hero__img{% if forloop.first %} hero__img--active{% endif %}">
             {% endfor %}
-        {% else %}
-            <img src="{% static 'img/hero-bg.jpg' %}" alt="" aria-hidden="true"
-                 class="hero__img hero__img--active">
         {% endif %}
         <div class="hero__overlay" aria-hidden="true"></div>
     </div>
